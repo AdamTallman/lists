@@ -1,5 +1,5 @@
-class ToDo {
+class Todo {
   final String title;
 
-  ToDo(this.title);
+  Todo(this.title);
 }

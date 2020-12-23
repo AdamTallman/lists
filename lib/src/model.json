@@ -1,0 +1,32 @@
+{
+    "tabs": {
+        "tab1": {
+            "title": "fukingTab",
+            "icon_path": "path",
+            "lists": {
+                "list1": {
+                    "title": "title"},
+
+                "list2": true
+            }
+        }
+    },
+    
+    "todos": {
+        "list1": {
+            "todo1": {
+                "title":"wtf"
+            },
+            "todo2": {
+                "title":"wtddd"
+            }
+        },
+        "list2":{
+            "anothertodo":{
+                "title":"whatever"
+            }
+        }
+    }
+    
+    
+}

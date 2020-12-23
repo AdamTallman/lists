@@ -44,6 +44,8 @@ class _AddListState extends State<AddList> {
                 child: TextField(
                   decoration: InputDecoration(hintText: 'Add useless list'),
                   controller: _textController,
+                  autofocus: true,
+                  onSubmitted: (_) => _addNewList(),
                 ),
               ),
               IconButton(

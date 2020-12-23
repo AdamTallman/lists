@@ -6,100 +6,164 @@ import 'package:lists/src/widgets/custom_icon.dart';
 import 'package:lists/src/widgets/tab_button.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/widgets/custom_icon_button.dart';
+import 'package:lists/src/service/sqflite.dart';
 
 class ToDoCard extends StatefulWidget {
-  final TodoList toDoGroup;
+  final TodoList todoList;
+  final Function(int) onDelete;
 
-  ToDoCard(this.toDoGroup);
+  ToDoCard({@required this.todoList, @required this.onDelete});
 
   @override
   _ToDoCardState createState() => _ToDoCardState();
 }
 
 class _ToDoCardState extends State<ToDoCard> {
-  bool _addNew;
+  bool _addNewTodo;
+  bool _edit;
+  final _captionTextController = TextEditingController();
   final _textController = TextEditingController();
 
-  void _addNewItem() {
-    widget.toDoGroup.add(Todo(_textController.value.text));
+  void _addNewItem() async {
+    final title = _textController.value.text;
+    int id = await DBProvider.instance.addTodo(title, widget.todoList.id);
+    widget.todoList.add(Todo(title, id: id));
     _resetTextField();
+  }
+
+  void _editCaption() {
+    final newTitle = _captionTextController.value.text;
+    if (newTitle != null &&
+        newTitle != '' &&
+        newTitle != widget.todoList.title) {
+      DBProvider.instance.updateListTitle(widget.todoList.id, newTitle);
+      setState(() {
+        widget.todoList.title = newTitle;
+        _edit = false;
+        _setCaptionController();
+      });
+    }
   }
 
   void _resetTextField() {
     _textController.clear();
     setState(() {
-      this._addNew = false;
+      this._addNewTodo = false;
     });
   }
 
   void _removeItem(Todo item) {
+    DBProvider.instance.deleteTodo(item.id);
     setState(() {
-      widget.toDoGroup.remove(item);
+      widget.todoList.remove(item);
     });
+  }
+
+  void _setCaptionController() {
+    _captionTextController.value =
+        TextEditingValue(text: widget.todoList.title);
   }
 
   @override
   void initState() {
-    _addNew = false;
+    _addNewTodo = false;
+    _edit = false;
+
+    _setCaptionController();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final caption = Container(
-      padding: EdgeInsets.only(left: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // the caption
-          Row(
-            children: [
-              Container(
-                child: Text(
-                  widget.toDoGroup.title,
-                  style: context.theme.textTheme.headline6
-                      .apply(color: context.theme.primaryColor),
-                ),
-              ),
-              IconButton(
-                  icon: CustomIcon(
-                    CustomIcons.edit,
-                    color: AppColors.backgroundGrey,
-                  ),
-                  onPressed: () {}),
-            ],
-          ),
-          IconButton(
-            icon: CustomIcon(
-              CustomIcons.add,
-              color: AppColors.backgroundGrey,
+    final editCaption = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _captionTextController,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: 'Enter Caption',
             ),
-            color: AppColors.backgroundGrey,
-            onPressed: () => setState(() => _addNew = true),
+            onSubmitted: (_) => _editCaption(),
           ),
-          /*TabButton(
-            title: 'add',
-            icon: CustomIcons.add,
-            onPressed: () => setState(() => _addNew = true),
-          ),*/
-        ],
-      ),
+        ),
+        IconButton(
+          icon: Icon(Icons.clear),
+          color: Colors.red,
+          onPressed: () => setState(() {
+            _edit = false;
+            _setCaptionController();
+          }),
+        ),
+        IconButton(
+          icon: Icon(Icons.done),
+          color: Colors.blue,
+          onPressed: _editCaption,
+        ),
+        IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () => setState(() {
+            _edit = false;
+            widget.onDelete(widget.todoList.id);
+          }),
+        ),
+      ],
     );
 
-    final listLength = widget.toDoGroup.toDos.length;
+    final caption = Container(
+      padding: EdgeInsets.only(left: 16),
+      child: _edit
+          ? editCaption
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // the caption
+                Row(
+                  children: [
+                    Container(
+                      child: Text(
+                        widget.todoList.title,
+                        style: context.theme.textTheme.headline6
+                            .apply(color: context.theme.primaryColor),
+                      ),
+                    ),
+                    IconButton(
+                        icon: CustomIcon(
+                          CustomIcons.edit,
+                          color: AppColors.backgroundGrey,
+                        ),
+                        onPressed: () => setState(() => _edit = true)),
+                  ],
+                ),
+                IconButton(
+                  icon: CustomIcon(
+                    CustomIcons.add,
+                    color: AppColors.backgroundGrey,
+                  ),
+                  color: AppColors.backgroundGrey,
+                  onPressed: () => setState(() => _addNewTodo = true),
+                ),
+              ],
+            ),
+    );
+
+    final listLength = widget.todoList.todos.length;
 
     final todoList = Column(
-      children: List.generate(_addNew ? listLength + 1 : listLength, (index) {
+      children:
+          List.generate(_addNewTodo ? listLength + 1 : listLength, (index) {
         return index != listLength
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.toDoGroup.toDos[index].title,
+                    widget.todoList.todos[index].title,
                     style: AppTheme.cardTextStyle,
                   ),
                   IconButton(
-                    onPressed: () => _removeItem(widget.toDoGroup.toDos[index]),
+                    onPressed: () => _removeItem(widget.todoList.todos[index]),
                     icon: Container(
                       decoration: BoxDecoration(
                         border:
@@ -123,6 +187,7 @@ class _ToDoCardState extends State<ToDoCard> {
                       decoration: InputDecoration(
                         hintText: 'wha\'ever',
                       ),
+                      onSubmitted: (_) => _addNewItem(),
                     ),
                   ),
                   IconButton(

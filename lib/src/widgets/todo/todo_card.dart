@@ -3,9 +3,7 @@ import 'package:lists/src/model/todo.dart';
 import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/widgets/custom_icon.dart';
-import 'package:lists/src/widgets/tab_button.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/widgets/custom_icon_button.dart';
 import 'package:lists/src/service/sqflite.dart';
 
 class ToDoCard extends StatefulWidget {

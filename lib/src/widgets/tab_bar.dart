@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lists/src/widgets/custom_icon.dart';
 import 'package:lists/src/widgets/tab_button.dart';
 import 'package:lists/src/utils/context.dart';
+import 'package:lists/src/widgets/add_new_tab.dart';
 
 class TabBarWidget extends StatelessWidget {
   final List<TabButton> buttons;
@@ -24,18 +26,21 @@ class TabBarWidget extends StatelessWidget {
               children: buttons,
             ),
           ),
-          // the menu button for future
+          // add new tab
           IconButton(
-            icon: ClipOval(
-              child: Container(
-                color: context.theme.primaryColor,
-                child: Icon(Icons.add, color: Colors.white),
-              ),
+            icon: Icon(
+              Icons.add_circle,
+              color: context.theme.primaryColor,
+              size: 32,
             ),
             onPressed: () {},
           ),
         ],
       ),
     );
+  } // build
+
+  void _showAddTab(BuildContext context) {
+    showModalBottomSheet(context: context, builder: (_) => AddNewTab());
   }
 }

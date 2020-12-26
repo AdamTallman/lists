@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:lists/src/model/todo.dart';
-import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
-import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/widgets/tab.dart';
 import 'package:lists/src/widgets/tab_bar.dart';
 import 'package:lists/src/widgets/tab_button.dart';
-import 'package:lists/src/widgets/todo/add_list.dart';
-import 'package:lists/src/widgets/todo/todo_card.dart';
-import 'package:lists/src/service/sqflite.dart';
 
 class TabsContaiter extends StatefulWidget {
   final List<TodoTab> tabs;

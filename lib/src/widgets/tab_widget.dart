@@ -21,6 +21,9 @@ class _TabWidgetState extends State<TabWidget> {
   void _addList(String title) async {
     if (title != null && title.isNotEmpty) {
       int id = await DBProvider.instance.addList(title, widget.tab.id);
+      /*context.scaffold.showSnackBar(SnackBar(
+        content: Text('New list has been added'),
+      ));*/
       setState(() {
         widget.tab.todoLists.add(TodoList(title, id: id, todos: []));
       });
@@ -37,7 +40,7 @@ class _TabWidgetState extends State<TabWidget> {
 
   @override
   Widget build(context) {
-    final addListButton = AddList(_addList);
+    final addListButton = AddListButton(_addList);
 
     final listsContainer = widget.tab == null
         ? Center(
@@ -65,7 +68,7 @@ class _TabWidgetState extends State<TabWidget> {
               );
 
     final body = Container(
-      margin: EdgeInsets.only(top: widget.paddingTop, left: 8, right: 8),
+      margin: EdgeInsets.only(left: 8, right: 8),
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: listsContainer,
     );

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo.dart';
 import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/styles.dart';
-import 'package:lists/src/widgets/custom_icon.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/service/sqflite.dart';
+import 'package:lists/src/widgets/todo/todo_widget.dart';
 
 class ToDoCard extends StatefulWidget {
   final TodoList todoList;
@@ -83,6 +83,7 @@ class _ToDoCardState extends State<ToDoCard> {
             autofocus: true,
             decoration: InputDecoration(
               hintText: 'Enter Caption',
+              border: InputBorder.none,
             ),
             onSubmitted: (_) => _editCaption(),
           ),
@@ -111,39 +112,28 @@ class _ToDoCardState extends State<ToDoCard> {
     );
 
     final caption = Container(
-      padding: EdgeInsets.only(left: 16),
+      //padding: EdgeInsets.only(left: 16),
       child: _edit
           ? editCaption
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // the caption
-                Row(
-                  children: [
-                    Container(
-                      child: Text(
-                        widget.todoList.title,
-                        style: context.theme.textTheme.headline6
-                            .apply(color: context.theme.primaryColor),
-                      ),
-                    ),
-                    IconButton(
-                        icon: CustomIcon(
-                          CustomIcons.edit,
-                          color: AppColors.backgroundGrey,
-                        ),
-                        onPressed: () => setState(() => _edit = true)),
-                  ],
-                ),
-                IconButton(
-                  icon: CustomIcon(
-                    CustomIcons.add,
-                    color: AppColors.backgroundGrey,
+          : ListTile(
+              title: Row(
+                children: [
+                  Text(
+                    widget.todoList.title,
+                    style: context.theme.textTheme.headline6
+                        .apply(color: context.theme.primaryColor),
                   ),
-                  color: AppColors.backgroundGrey,
-                  onPressed: () => setState(() => _addNewTodo = true),
-                ),
-              ],
+                  IconButton(
+                      icon: Icon(Icons.create),
+                      color: AppColors.backgroundGrey,
+                      onPressed: () => setState(() => _edit = true)),
+                ],
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.add),
+                color: AppColors.backgroundGrey,
+                onPressed: () => setState(() => _addNewTodo = true),
+              ),
             ),
     );
 
@@ -153,79 +143,45 @@ class _ToDoCardState extends State<ToDoCard> {
       children:
           List.generate(_addNewTodo ? listLength + 1 : listLength, (index) {
         return index != listLength
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.todoList.todos[index].title,
-                    style: AppTheme.cardTextStyle,
-                  ),
-                  IconButton(
-                    onPressed: () => _removeItem(widget.todoList.todos[index]),
-                    icon: Container(
-                      decoration: BoxDecoration(
-                        border:
-                            Border.all(color: AppColors.lightGrey, width: 1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      width: 18,
-                      height: 18,
-                    ),
-                  ),
-                ],
+            ? TodoWidget(
+                title: widget.todoList.todos[index].title,
+                onDone: () => _removeItem(widget.todoList.todos[index]),
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    //width: 150,
-                    child: TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'wha\'ever',
-                      ),
-                      onSubmitted: (_) => _addNewItem(),
+            : ListTile(
+                title: Expanded(
+                  //width: 150,
+                  child: TextField(
+                    controller: _textController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'To do',
                     ),
+                    onSubmitted: (_) => _addNewItem(),
                   ),
-                  IconButton(
-                      icon: Icon(Icons.clear),
-                      color: Colors.red,
-                      onPressed: _resetTextField),
-                  IconButton(
-                    icon: Icon(Icons.done),
-                    color: Colors.blue,
-                    onPressed: _addNewItem,
+                ),
+                trailing: FittedBox(
+                  child: Row(
+                    children: [
+                      IconButton(
+                          icon: Icon(Icons.clear),
+                          color: Colors.red,
+                          onPressed: _resetTextField),
+                      IconButton(
+                        icon: Icon(Icons.done),
+                        color: Colors.blue,
+                        onPressed: _addNewItem,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               );
       }),
-    );
-
-    final body = ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        child: todoList,
-        padding: EdgeInsets.only(left: 20),
-        decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(
-              color: context.theme.primaryColor,
-              width: 16,
-            ),
-            right: BorderSide(width: 0, color: Colors.transparent),
-            top: BorderSide(width: 0, color: Colors.transparent),
-            bottom: BorderSide(width: 0, color: Colors.transparent),
-          ),
-          color: AppColors.backgroundGrey,
-        ),
-      ),
     );
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       child: Column(
-        children: [caption, body],
+        children: [caption, todoList],
       ),
     );
   }

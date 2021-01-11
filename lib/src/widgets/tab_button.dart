@@ -1,44 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/widgets/custom_icon.dart';
 
 class TabButton extends StatelessWidget {
-  final String icon;
   final String title;
   final Function onPressed;
-  final bool active;
+  final bool isActive;
+  final Color color;
 
-  TabButton({this.icon, this.title, this.onPressed, this.active = false});
+  TabButton({this.title, this.onPressed, this.color, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
-    final custIcon = CustomIcon(
-      icon,
-      color: active ? context.theme.primaryColor : AppColors.backgroundGrey,
-    );
-
-    return active
-        ? ElevatedButton.icon(
+    return isActive
+        ? ElevatedButton(
             onPressed: onPressed,
-            icon: custIcon,
-            label: Text(
+            child: Text(
               title,
               style: TextStyle(
-                  color: context.theme.primaryColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15),
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               elevation: 0,
-              primary: AppColors.backgroundGrey,
+              primary: color,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24)),
             ),
           )
-        : IconButton(
-            icon: custIcon,
+        : TextButton(
             onPressed: onPressed,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontSize: 15,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              primary: context.theme.primaryColor,
+            ),
           );
   }
 }

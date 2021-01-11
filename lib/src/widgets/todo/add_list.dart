@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
 
-class AddList extends StatefulWidget {
+class AddListButton extends StatefulWidget {
   final Function(String) addList;
 
-  AddList(this.addList);
+  AddListButton(this.addList);
 
   @override
-  _AddListState createState() => _AddListState();
+  _AddListButtonState createState() => _AddListButtonState();
 }
 
-class _AddListState extends State<AddList> {
+class _AddListButtonState extends State<AddListButton> {
   bool _add;
   final _textController = TextEditingController();
 
@@ -42,7 +42,7 @@ class _AddListState extends State<AddList> {
             children: [
               Expanded(
                 child: TextField(
-                  decoration: InputDecoration(hintText: 'Add useless list'),
+                  decoration: InputDecoration(hintText: 'New list'),
                   controller: _textController,
                   autofocus: true,
                   onSubmitted: (_) => _addNewList(),
@@ -60,18 +60,18 @@ class _AddListState extends State<AddList> {
               ),
             ],
           )
-        : OutlinedButton(
+        : ElevatedButton(
             onPressed: () => setState(() => _add = true),
             child: Text(
               'ADD LIST',
               style: TextStyle(
-                color: context.theme.primaryColor,
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
               ),
             ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: context.theme.primaryColor),
+            style: ElevatedButton.styleFrom(
+              primary: context.theme.primaryColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18)),
             ),

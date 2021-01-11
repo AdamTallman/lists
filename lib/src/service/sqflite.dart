@@ -21,27 +21,23 @@ class DBProvider {
   }
 
   Future<Database> _init() async {
-    const todoPath = 'assets/icons/todo.png';
-    const tobuyPath = 'assets/icons/bag.png';
-
     return await openDatabase(dbName, version: 1, onCreate: (db, _) async {
       await db.execute(
-          'CREATE TABLE $tabsTable (id INTEGER PRIMARY KEY, title TEXT, icon TEXT)');
+          'CREATE TABLE $tabsTable (id INTEGER PRIMARY KEY, title TEXT )');
       await db.execute(
           'CREATE TABLE $listsTable (id INTEGER PRIMARY KEY, title TEXT, tab_id INTEGER)');
       await db.execute(
           'CREATE TABLE $todosTable (id INTEGER PRIMARY KEY, title TEXT, list_id INTEGER)');
 
-      await db.rawInsert('INSERT INTO $tabsTable(title, icon) VALUES (?, ?)',
-          ['To Do', todoPath]);
-      await db.rawInsert('INSERT INTO $tabsTable(title, icon) VALUES (?, ?)',
-          ['To Buy', tobuyPath]);
+      await db.rawInsert('INSERT INTO $tabsTable(title) VALUES (?)', ['To Do']);
+      await db
+          .rawInsert('INSERT INTO $tabsTable(title) VALUES (?)', ['To Buy']);
     });
   }
 
-  Future<int> addTab(String title, String icon) async {
+  Future<int> addTab(String title) async {
     return await (await database).rawInsert(
-        'INSERT INTO $tabsTable(title, icon) VALUES(?, ?)', [title, icon]);
+        'INSERT INTO $tabsTable(title, icon) VALUES(?, ?)', [title, '']);
   }
 
   Future<int> addList(String title, int tabId) async {
@@ -61,13 +57,37 @@ class DBProvider {
   }
 
   Future<void> deleteList(int id) async {
-    await (await database)
-        .rawDelete('DELETE FROM $listsTable WHERE id = ?', [id]);
+    await (await database).transaction((txn) async {
+      await txn.rawDelete('DELETE FROM $listsTable WHERE id = ?', [id]);
+      await txn.rawDelete('DELETE FROM $todosTable WHERE list_id = ?', [id]);
+    });
+  }
+
+  Future deleteTab(int id) async {
+    await (await database).transaction((txn) async {
+      final List<int> listIds = (await txn
+              .rawQuery('SELECT id from $listsTable WHERE tab_id = ?', [id]))
+          .map((list) => list['id'] as int)
+          .toList();
+      listIds.forEach((listId) async {
+        await txn.rawDelete('DELETE FROM $listsTable WHERE id = ?', [listId]);
+        await txn
+            .rawDelete('DELETE FROM $todosTable WHERE list_id = ?', [listId]);
+      });
+
+      await txn.rawDelete('DELETE FROM $tabsTable WHERE id = ?', [id]);
+    });
   }
 
   Future<void> updateListTitle(int id, String newTitle) async {
     await (await database).rawUpdate(
         'UPDATE $listsTable SET title = ? WHERE id = ?', [newTitle, id]);
+  }
+
+  Future<bool> checkIfTabExists(String tabTitle) async {
+    final result = await (await database)
+        .rawQuery('SELECT * FROM $tabsTable WHERE title = ?', [tabTitle]);
+    return result != null && result.isNotEmpty;
   }
 
   Future<List<TodoTab>> getTabs() async {

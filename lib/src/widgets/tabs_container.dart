@@ -52,7 +52,11 @@ class TabsContaiterState extends State<TabsContaiter>
   }
 
   Future deleteTab() async {
-    final activeTab = widget.tabs[_tabController.index];
+    final controllerIndex = _tabController.index;
+    final activeTab = widget.tabs[controllerIndex];
+    final tabIndex = widget.tabs.indexOf(activeTab);
+    bool delete = true;
+    final duration = Duration(seconds: 4);
 
     final dialogAnswer = await showDialog<bool>(
       context: context,
@@ -75,7 +79,31 @@ class TabsContaiterState extends State<TabsContaiter>
 
     if (dialogAnswer == false) return;
 
-    await DBProvider.instance.deleteTab(activeTab.id);
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Text('Tab "'),
+          Text(activeTab.title, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('" was deleted.')
+        ],
+      ),
+      duration: duration,
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          delete = false;
+          setState(() {
+            widget.tabs.insert(tabIndex, activeTab);
+            _tabController.dispose();
+            _tabController = TabController(
+              length: widget.tabs.length,
+              vsync: this,
+              initialIndex: controllerIndex,
+            );
+          });
+        },
+      ),
+    );
 
     setState(() {
       final position = widget.tabs.indexOf(activeTab);
@@ -85,6 +113,12 @@ class TabsContaiterState extends State<TabsContaiter>
           length: widget.tabs.length,
           vsync: this,
           initialIndex: widget.tabs.length - 1);
+    });
+
+    context.scaffold.showSnackBar(snackBar);
+
+    Future.delayed(duration, () {
+      if (delete) DBProvider.instance.deleteTab(activeTab.id);
     });
   }
 

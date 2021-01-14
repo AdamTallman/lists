@@ -21,20 +21,49 @@ class _TabWidgetState extends State<TabWidget> {
   void _addList(String title) async {
     if (title != null && title.isNotEmpty) {
       int id = await DBProvider.instance.addList(title, widget.tab.id);
-      /*context.scaffold.showSnackBar(SnackBar(
+      context.scaffold.showSnackBar(SnackBar(
         content: Text('New list has been added'),
-      ));*/
+      ));
       setState(() {
         widget.tab.todoLists.add(TodoList(title, id: id, todos: []));
       });
     }
   }
 
-  void _deleteList(int id) {
+  void _deleteList(int id) async {
     final list = widget.tab.todoLists.singleWhere((list) => list.id == id);
-    DBProvider.instance.deleteList(id);
+    final listIndex = widget.tab.todoLists.indexOf(list);
+    final duration = Duration(seconds: 4);
+    bool delete = true;
+
+    final snackBar = SnackBar(
+      duration: duration,
+      content: Row(
+        children: [
+          Text('List "'),
+          Text(list.title, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('" was deleted.'),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          delete = false;
+          setState(() {
+            widget.tab.todoLists.insert(listIndex, list);
+          });
+        },
+      ),
+    );
+
     setState(() {
       widget.tab.todoLists.remove(list);
+    });
+
+    context.scaffold.showSnackBar(snackBar);
+
+    Future.delayed(duration, () {
+      if (delete) DBProvider.instance.deleteList(id);
     });
   }
 

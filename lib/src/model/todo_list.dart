@@ -17,6 +17,10 @@ class TodoList {
                 .toList());
   }
 
+  int get todosCount => todos.length;
+  bool get isEmpty => todos.isEmpty;
+  bool get isNotEmpty => !isEmpty;
+
   add(Todo item) {
     todos.add(item);
   }

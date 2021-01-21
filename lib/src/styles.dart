@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static final primaryColor = Colors.deepPurple;
+  static final accentColor = Color(0xFF8AB73A);
 
   static final textTheme = TextTheme(
     headline6: TextStyle(
@@ -12,6 +13,7 @@ class AppTheme {
 
   static final theme = ThemeData(
     primaryColor: primaryColor,
+    accentColor: accentColor,
     textTheme: textTheme,
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(

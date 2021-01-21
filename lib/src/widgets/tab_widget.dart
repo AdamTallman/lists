@@ -71,37 +71,34 @@ class _TabWidgetState extends State<TabWidget> {
   Widget build(context) {
     final addListButton = AddListButton(_addList);
 
-    final listsContainer = widget.tab == null
-        ? Center(
-            child: Text("Something is not okay"),
+    final listsContainer = widget.tab.todoLists.isNotEmpty
+        ? ListView.builder(
+            padding: EdgeInsets.only(bottom: 8),
+            scrollDirection: Axis.vertical,
+            itemCount: widget.tab.todoLists.length + 1,
+            itemBuilder: (ctx, index) => index == widget.tab.todoLists.length
+                ? addListButton
+                : ToDoCard(
+                    todoList: widget.tab.todoLists[index],
+                    onDelete: _deleteList,
+                  ),
           )
-        : widget.tab.todoLists.isNotEmpty
-            ? ListView.builder(
-                padding: EdgeInsets.only(bottom: 8),
-                scrollDirection: Axis.vertical,
-                itemCount: widget.tab.todoLists.length + 1,
-                itemBuilder: (ctx, index) =>
-                    index == widget.tab.todoLists.length
-                        ? addListButton
-                        : ToDoCard(
-                            todoList: widget.tab.todoLists[index],
-                            onDelete: _deleteList,
-                          ),
-              )
-            : ListView(
-                children: [
-                  Text('Nothing here yet',
-                      style: TextStyle(color: AppColors.backgroundGrey)),
-                  addListButton,
-                ],
-              );
+        : ListView(
+            children: [
+              Text('Nothing here yet',
+                  style: TextStyle(color: AppColors.backgroundGrey)),
+              addListButton,
+            ],
+          );
 
-    final body = Container(
+    return Container(
       margin: EdgeInsets.only(left: 8, right: 8),
       padding: EdgeInsets.symmetric(horizontal: 8),
-      child: listsContainer,
+      child: widget.tab == null
+          ? Center(
+              child: Text("Something is not okay"),
+            )
+          : listsContainer,
     );
-
-    return body;
   }
 }

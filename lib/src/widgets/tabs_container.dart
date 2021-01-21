@@ -130,7 +130,19 @@ class TabsContaiterState extends State<TabsContaiter>
       tabs: widget.tabs
           .map(
             (tab) => Tab(
-              child: Text(tab.title),
+              child: Row(
+                children: [
+                  Text(tab.title),
+                  if (tab.todosCount != 0)
+                    Container(
+                      margin: EdgeInsets.only(left: 4),
+                      child: Text(
+                        tab.todosCount.toString(),
+                        style: TextStyle(color: context.theme.accentColor),
+                      ),
+                    ),
+                ],
+              ),
             ),
           )
           .toList(),

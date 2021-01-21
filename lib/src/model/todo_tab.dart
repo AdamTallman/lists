@@ -18,4 +18,14 @@ class TodoTab {
                 .map((todoListMap) => TodoList.fromMap(todoListMap))
                 .toList());
   }
+
+  int get todosCount => todoLists.isNotEmpty
+      ? todoLists.fold(
+          0, (previousValue, todoList) => previousValue + todoList.todosCount)
+      : 0;
+
+  bool get isNotEmpty =>
+      todoLists.isNotEmpty &&
+      todoLists.fold(true,
+          (previousValue, todoList) => todoList.isNotEmpty && previousValue);
 }

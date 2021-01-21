@@ -123,6 +123,14 @@ class _ToDoCardState extends State<ToDoCard> {
                     style: context.theme.textTheme.headline6
                         .apply(color: context.theme.primaryColor),
                   ),
+                  if (widget.todoList.isNotEmpty)
+                    Container(
+                      margin: EdgeInsets.only(left: 8),
+                      child: Text(
+                        widget.todoList.todosCount.toString(),
+                        style: TextStyle(color: context.theme.accentColor),
+                      ),
+                    ),
                   IconButton(
                       icon: Icon(Icons.create),
                       color: AppColors.backgroundGrey,

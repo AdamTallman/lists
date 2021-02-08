@@ -67,22 +67,7 @@ class AppTabBar extends StatelessWidget with PreferredSizeWidget {
             Expanded(
               child: tabBar,
             ),
-            // add new tab
-            IconButton(
-              icon: Container(
-                height: 36,
-                width: 36,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: context.theme.primaryColor),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 20,
-                  //size: 32,
-                ),
-              ),
-              onPressed: () => _showAddTab(context),
-            ),
+
             menuButton,
           ],
         ),

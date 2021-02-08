@@ -1,9 +1,14 @@
+import 'package:fab_circular_menu/fab_circular_menu.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/sqflite.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
+import 'package:lists/src/widgets/add_new_list.dart';
+import 'package:lists/src/widgets/add_new_tab.dart';
 import 'package:lists/src/widgets/tab_widget.dart';
 import 'package:lists/src/widgets/app_tab_bar.dart';
 
@@ -29,19 +34,32 @@ class TabsContaiter extends StatefulWidget {
 class TabsContaiterState extends State<TabsContaiter>
     with TickerProviderStateMixin {
   static const double appBarHeight = 75.0;
+  final _fabKey = GlobalKey<FabCircularMenuState>();
+  final _tabKeys = List<GlobalKey<TabWidgetState>>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isFabVisible = true;
 
   TabController _tabController;
+
+  /// Return the active tab/
+  /// Can be called only AFTER the state was initialized
+  TodoTab get _activeTab => widget.tabs[_tabController.index];
+
+  int get _activeTabIndex => widget.tabs.indexOf(_activeTab);
 
   @override
   void initState() {
     if (widget.tabs == null || widget.tabs.length == 0)
       print('there is a problem here');
 
+    widget.tabs.forEach((_) => _tabKeys.add(GlobalKey<TabWidgetState>()));
+
     _tabController = TabController(length: widget.tabs.length, vsync: this);
     super.initState();
   }
 
   void addTab(TodoTab tab) {
+    _tabKeys.add(GlobalKey<TabWidgetState>());
     setState(() {
       widget.tabs.add(tab);
       _tabController.dispose();
@@ -51,18 +69,19 @@ class TabsContaiterState extends State<TabsContaiter>
     _tabController.animateTo(widget.tabs.length - 1);
   }
 
+  void addList(TodoList list) {}
+
   Future deleteTab() async {
     final controllerIndex = _tabController.index;
-    final activeTab = widget.tabs[controllerIndex];
-    final tabIndex = widget.tabs.indexOf(activeTab);
+    assert(controllerIndex == _activeTabIndex);
+    final tabIndex = _activeTabIndex;
     bool delete = true;
     final duration = Duration(seconds: 4);
 
     final dialogAnswer = await showDialog<bool>(
       context: context,
-      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('Delete tab ${activeTab.title}?'),
+        title: Text('Delete tab ${_activeTab.title}?'),
         actions: [
           TextButton(
             // cancel button
@@ -77,13 +96,16 @@ class TabsContaiterState extends State<TabsContaiter>
       ),
     ); // showDialog()
 
-    if (dialogAnswer == false) return;
+    if (dialogAnswer != true) return;
+
+    final tabKey = _tabKeys[tabIndex];
+    final tab = _activeTab;
 
     final snackBar = SnackBar(
       content: Row(
         children: [
           Text('Tab "'),
-          Text(activeTab.title, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(_activeTab.title, style: TextStyle(fontWeight: FontWeight.bold)),
           Text('" was deleted.')
         ],
       ),
@@ -93,12 +115,13 @@ class TabsContaiterState extends State<TabsContaiter>
         onPressed: () {
           delete = false;
           setState(() {
-            widget.tabs.insert(tabIndex, activeTab);
+            widget.tabs.insert(tabIndex, tab);
+            _tabKeys.insert(tabIndex, tabKey);
             _tabController.dispose();
             _tabController = TabController(
               length: widget.tabs.length,
               vsync: this,
-              initialIndex: controllerIndex,
+              initialIndex: tabIndex,
             );
           });
         },
@@ -106,8 +129,8 @@ class TabsContaiterState extends State<TabsContaiter>
     );
 
     setState(() {
-      final position = widget.tabs.indexOf(activeTab);
-      widget.tabs.removeAt(position);
+      _tabKeys.removeAt(tabIndex);
+      widget.tabs.removeAt(tabIndex);
       _tabController.dispose();
       _tabController = TabController(
           length: widget.tabs.length,
@@ -115,12 +138,26 @@ class TabsContaiterState extends State<TabsContaiter>
           initialIndex: widget.tabs.length - 1);
     });
 
-    context.scaffold.showSnackBar(snackBar);
+    _scaffoldKey.currentState.showSnackBar(snackBar);
 
     Future.delayed(duration, () {
-      if (delete) DBProvider.instance.deleteTab(activeTab.id);
+      if (delete) DBProvider.instance.deleteTab(tab.id);
     });
+  } // deleteTab
+
+  void showFab() {
+    if (_isFabVisible == false)
+      setState(() {
+        _isFabVisible = true;
+      });
   }
+
+  void hideFab() {
+    if (_isFabVisible == true)
+      setState(() {
+        _isFabVisible = false;
+      });
+  } // hideFab
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +175,7 @@ class TabsContaiterState extends State<TabsContaiter>
                       margin: EdgeInsets.only(left: 4),
                       child: Text(
                         tab.todosCount.toString(),
-                        style: TextStyle(color: context.theme.accentColor),
+                        style: TextStyle(color: theme.accentColor),
                       ),
                     ),
                 ],
@@ -150,24 +187,71 @@ class TabsContaiterState extends State<TabsContaiter>
       isScrollable: true,
       indicatorSize: TabBarIndicatorSize.tab,
       indicator: BoxDecoration(
-        color: context.theme.primaryColor,
+        color: theme.primaryColor,
         borderRadius: borderRadius,
       ),
-      unselectedLabelColor: context.theme.primaryColor,
+      unselectedLabelColor: theme.primaryColor,
+    );
+
+    final fabChildLabeStyle = TextStyle(color: Colors.white, fontSize: 16);
+
+    final fab = SpeedDial(
+      icon: Icons.add,
+      activeIcon: Icons.clear,
+      tooltip: 'Add Something',
+      curve: Curves.bounceIn,
+      backgroundColor: theme.primaryColor,
+      children: [
+        // add tab button
+        SpeedDialChild(
+          child: Icon(Icons.tab),
+          label: 'Tab',
+          backgroundColor: theme.accentColor,
+          labelStyle: fabChildLabeStyle,
+          onTap: () async {
+            final tab = await showModalBottomSheet(
+                context: context, builder: (_) => AddNewTab());
+            if (tab != null) addTab(tab);
+          },
+        ),
+        // add list button
+        SpeedDialChild(
+          child: Icon(Icons.list),
+          label: 'List',
+          backgroundColor: theme.accentColor,
+          labelStyle: fabChildLabeStyle,
+          onTap: () async {
+            final list = await showModalBottomSheet(
+                context: context,
+                builder: (_) => AddNewList(tabId: _activeTab.id));
+
+            if (list != null)
+              _tabKeys[_activeTabIndex].currentState.addList(list);
+          },
+        )
+      ],
     );
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppTabBar(
         tabBar: tabBar,
         height: appBarHeight,
       ),
       body: TabBarView(
         children: widget.tabs
-            .map((tab) => TabWidget(
-                  tab: tab,
-                ))
+            .map(
+              (tab) => TabWidget(
+                tab: tab,
+                key: _tabKeys[widget.tabs.indexOf(tab)],
+              ),
+            )
             .toList(),
         controller: _tabController,
+      ),
+      floatingActionButton: Visibility(
+        visible: _isFabVisible,
+        child: fab,
       ),
     );
   }

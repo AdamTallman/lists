@@ -71,7 +71,7 @@ class _AddListButtonState extends State<AddListButton> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              primary: context.theme.primaryColor,
+              primary: theme.primaryColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18)),
             ),

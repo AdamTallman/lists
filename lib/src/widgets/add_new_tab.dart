@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/service/sqflite.dart';
-import 'package:lists/src/widgets/tabs_container.dart';
 
 class AddNewTab extends StatefulWidget {
   @override
@@ -34,6 +33,7 @@ class _AddNewTabState extends State<AddNewTab> {
   void _reset([val]) {
     loading = false;
     tabExists = false;
+    _titleController.clear();
     Navigator.of(context).pop<TodoTab>(val);
   }
 
@@ -47,7 +47,7 @@ class _AddNewTabState extends State<AddNewTab> {
           Text(
             'Add Tab',
             style: TextStyle(
-              color: context.theme.primaryColor,
+              color: theme.primaryColor,
             ),
           ),
           TextField(
@@ -67,8 +67,7 @@ class _AddNewTabState extends State<AddNewTab> {
               TextButton(
                   onPressed: _reset,
                   child: loading ? CircularProgressIndicator() : Text('Cancel'),
-                  style: TextButton.styleFrom(
-                      primary: context.theme.primaryColor)),
+                  style: TextButton.styleFrom(primary: theme.primaryColor)),
               ElevatedButton(
                 onPressed: _titleController.value.text.isNotEmpty
                     ? () => setState(() {
@@ -78,7 +77,7 @@ class _AddNewTabState extends State<AddNewTab> {
                     : null,
                 child: Text('Add'),
                 style: ElevatedButton.styleFrom(
-                  primary: context.theme.primaryColor,
+                  primary: theme.primaryColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
                 ),

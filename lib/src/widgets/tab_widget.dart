@@ -11,17 +11,23 @@ class TabWidget extends StatefulWidget {
   final TodoTab tab;
   final double paddingTop;
 
-  TabWidget({this.tab, this.paddingTop});
+  TabWidget({Key key, @required this.tab, this.paddingTop}) : super(key: key);
 
   @override
-  _TabWidgetState createState() => _TabWidgetState();
+  TabWidgetState createState() => TabWidgetState();
 }
 
-class _TabWidgetState extends State<TabWidget> {
+class TabWidgetState extends State<TabWidget> {
+  void addList(TodoList list) {
+    setState(() {
+      widget.tab.todoLists.add(list);
+    });
+  }
+
   void _addList(String title) async {
     if (title != null && title.isNotEmpty) {
       int id = await DBProvider.instance.addList(title, widget.tab.id);
-      context.scaffold.showSnackBar(SnackBar(
+      scaffold.showSnackBar(SnackBar(
         content: Text('New list has been added'),
       ));
       setState(() {
@@ -60,7 +66,7 @@ class _TabWidgetState extends State<TabWidget> {
       widget.tab.todoLists.remove(list);
     });
 
-    context.scaffold.showSnackBar(snackBar);
+    scaffold.showSnackBar(snackBar);
 
     Future.delayed(duration, () {
       if (delete) DBProvider.instance.deleteList(id);
@@ -69,27 +75,24 @@ class _TabWidgetState extends State<TabWidget> {
 
   @override
   Widget build(context) {
-    final addListButton = AddListButton(_addList);
-
-    final listsContainer = widget.tab.todoLists.isNotEmpty
-        ? ListView.builder(
-            padding: EdgeInsets.only(bottom: 8),
-            scrollDirection: Axis.vertical,
-            itemCount: widget.tab.todoLists.length + 1,
-            itemBuilder: (ctx, index) => index == widget.tab.todoLists.length
-                ? addListButton
-                : ToDoCard(
+    final listsContainer = Column(
+      children: [
+        widget.tab.todoLists.isNotEmpty
+            ? Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.only(bottom: 8),
+                  scrollDirection: Axis.vertical,
+                  itemCount: widget.tab.todoLists.length,
+                  itemBuilder: (_, index) => ToDoCard(
                     todoList: widget.tab.todoLists[index],
                     onDelete: _deleteList,
                   ),
-          )
-        : ListView(
-            children: [
-              Text('Nothing here yet',
-                  style: TextStyle(color: AppColors.backgroundGrey)),
-              addListButton,
-            ],
-          );
+                ),
+              )
+            : Text('Nothing here yet',
+                style: TextStyle(color: AppColors.backgroundGrey))
+      ],
+    );
 
     return Container(
       margin: EdgeInsets.only(left: 8, right: 8),

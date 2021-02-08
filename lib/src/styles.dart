@@ -30,7 +30,7 @@ class AppTheme {
 
   static final cardTextStyle = TextStyle(
     color: AppColors.text,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: FontWeight.w700,
   );
 }

@@ -4,6 +4,7 @@ import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/service/sqflite.dart';
+import 'package:lists/src/widgets/tabs_container.dart';
 import 'package:lists/src/widgets/todo/todo_widget.dart';
 
 class ToDoCard extends StatefulWidget {
@@ -22,6 +23,11 @@ class _ToDoCardState extends State<ToDoCard> {
   final _captionTextController = TextEditingController();
   final _textController = TextEditingController();
 
+  TabsContaiterState _tabsContaiterState;
+
+  TabsContaiterState get _tabsContainer =>
+      _tabsContaiterState ?? TabsContaiter.of(context);
+
   void _addNewItem() async {
     final title = _textController.value.text;
     int id = await DBProvider.instance.addTodo(title, widget.todoList.id);
@@ -30,6 +36,7 @@ class _ToDoCardState extends State<ToDoCard> {
   }
 
   void _editCaption() {
+    _tabsContainer.showFab();
     final newTitle = _captionTextController.value.text;
     if (newTitle != null &&
         newTitle != '' &&
@@ -44,6 +51,7 @@ class _ToDoCardState extends State<ToDoCard> {
   }
 
   void _resetTextField() {
+    _tabsContainer.showFab();
     _textController.clear();
     setState(() {
       this._addNewTodo = false;
@@ -91,10 +99,13 @@ class _ToDoCardState extends State<ToDoCard> {
         IconButton(
           icon: Icon(Icons.clear),
           color: Colors.red,
-          onPressed: () => setState(() {
-            _edit = false;
-            _setCaptionController();
-          }),
+          onPressed: () {
+            _tabsContainer.showFab();
+            setState(() {
+              _edit = false;
+              _setCaptionController();
+            });
+          },
         ),
         IconButton(
           icon: Icon(Icons.done),
@@ -103,10 +114,13 @@ class _ToDoCardState extends State<ToDoCard> {
         ),
         IconButton(
           icon: Icon(Icons.delete),
-          onPressed: () => setState(() {
-            _edit = false;
-            widget.onDelete(widget.todoList.id);
-          }),
+          onPressed: () {
+            _tabsContainer.showFab();
+            setState(() {
+              _edit = false;
+              widget.onDelete(widget.todoList.id);
+            });
+          },
         ),
       ],
     );
@@ -120,27 +134,36 @@ class _ToDoCardState extends State<ToDoCard> {
                 children: [
                   Text(
                     widget.todoList.title,
-                    style: context.theme.textTheme.headline6
-                        .apply(color: context.theme.primaryColor),
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontSize: 14,
+                    ),
                   ),
                   if (widget.todoList.isNotEmpty)
                     Container(
                       margin: EdgeInsets.only(left: 8),
                       child: Text(
                         widget.todoList.todosCount.toString(),
-                        style: TextStyle(color: context.theme.accentColor),
+                        style: TextStyle(color: theme.accentColor),
                       ),
                     ),
                   IconButton(
-                      icon: Icon(Icons.create),
-                      color: AppColors.backgroundGrey,
-                      onPressed: () => setState(() => _edit = true)),
+                    icon: Icon(Icons.create),
+                    color: AppColors.backgroundGrey,
+                    onPressed: () {
+                      _tabsContainer.hideFab();
+                      setState(() => _edit = true);
+                    },
+                  ),
                 ],
               ),
               trailing: IconButton(
                 icon: Icon(Icons.add),
                 color: AppColors.backgroundGrey,
-                onPressed: () => setState(() => _addNewTodo = true),
+                onPressed: () {
+                  _tabsContainer.hideFab();
+                  setState(() => _addNewTodo = true);
+                },
               ),
             ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/widgets/page.dart';
+import 'package:lists/src/utils/context.dart';
 
 void main() {
   WidgetsFlutterBinding
@@ -18,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.theme,
-      home: Scaffold(body: PageContainer()),
+      home: PageContainer(),
     );
   }
 }

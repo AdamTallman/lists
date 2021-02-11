@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_tab.dart';
+import 'package:lists/src/service/DBProvider.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/service/sqflite.dart';
 
 class AddNewTab extends StatefulWidget {
   @override
@@ -15,7 +15,7 @@ class _AddNewTabState extends State<AddNewTab> {
 
   Future _addTab() async {
     final tabTitle = _titleController.value.text;
-    final exists = await DBProvider.instance.checkIfTabExists(tabTitle);
+    final exists = await DBProvider.checkIfTabExists(tabTitle);
     TodoTab tab;
     if (exists) {
       setState(() {
@@ -24,7 +24,7 @@ class _AddNewTabState extends State<AddNewTab> {
       });
       return;
     } else {
-      final id = await DBProvider.instance.addTab(tabTitle);
+      final id = await DBProvider.addTab(tabTitle);
       tab = TodoTab(tabTitle, id: id, todoLists: []);
     }
     _reset(tab);

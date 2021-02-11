@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
-import 'package:lists/src/service/sqflite.dart';
+import 'package:lists/src/service/DBProvider.dart';
 import 'package:lists/src/styles.dart';
-import 'package:lists/src/widgets/todo/add_list.dart';
 import 'package:lists/src/widgets/todo/todo_card.dart';
 import 'package:lists/src/utils/context.dart';
 
@@ -26,7 +25,7 @@ class TabWidgetState extends State<TabWidget> {
 
   void _addList(String title) async {
     if (title != null && title.isNotEmpty) {
-      int id = await DBProvider.instance.addList(title, widget.tab.id);
+      int id = await DBProvider.addList(title, widget.tab.id);
       scaffold.showSnackBar(SnackBar(
         content: Text('New list has been added'),
       ));
@@ -69,7 +68,7 @@ class TabWidgetState extends State<TabWidget> {
     scaffold.showSnackBar(snackBar);
 
     Future.delayed(duration, () {
-      if (delete) DBProvider.instance.deleteList(id);
+      if (delete) DBProvider.deleteList(id);
     });
   }
 

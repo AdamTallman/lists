@@ -2,10 +2,11 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lists/src/app_settings.dart';
 import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
-import 'package:lists/src/service/sqflite.dart';
-import 'package:lists/src/styles.dart';
+import 'package:lists/src/service/DBProvider.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/widgets/add_new_list.dart';
 import 'package:lists/src/widgets/add_new_tab.dart';
@@ -39,6 +40,8 @@ class TabsContaiterState extends State<TabsContaiter>
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isFabVisible = true;
 
+  AppSettings settings;
+
   TabController _tabController;
 
   /// Return the active tab/
@@ -52,9 +55,23 @@ class TabsContaiterState extends State<TabsContaiter>
     if (widget.tabs == null || widget.tabs.length == 0)
       print('there is a problem here');
 
+    AppSettings.instance.load();
+    final initialIndex = AppSettings.instance.lastOpenedTab < widget.tabs.length
+        ? AppSettings.instance.lastOpenedTab
+        : widget.tabs.length - 1;
+
     widget.tabs.forEach((_) => _tabKeys.add(GlobalKey<TabWidgetState>()));
 
-    _tabController = TabController(length: widget.tabs.length, vsync: this);
+    _tabController = TabController(
+      length: widget.tabs.length,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+
+    _tabController.addListener(() {
+      AppSettings.instance.lastOpenedTab = _tabController.index;
+    });
+
     super.initState();
   }
 
@@ -81,15 +98,15 @@ class TabsContaiterState extends State<TabsContaiter>
     final dialogAnswer = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete tab ${_activeTab.title}?'),
+        title: Text('${Strings.deleteTab} ${_activeTab.title}?'),
         actions: [
           TextButton(
             // cancel button
-            child: Text('Cancel'),
+            child: Text(Strings.cancel),
             onPressed: () => Navigator.of(context).pop<bool>(false),
           ),
           ElevatedButton(
-            child: Text('Delete'),
+            child: Text(Strings.delete),
             onPressed: () => Navigator.of(context).pop<bool>(true),
           ),
         ],
@@ -104,14 +121,14 @@ class TabsContaiterState extends State<TabsContaiter>
     final snackBar = SnackBar(
       content: Row(
         children: [
-          Text('Tab "'),
+          Text('${Strings.tab} "'),
           Text(_activeTab.title, style: TextStyle(fontWeight: FontWeight.bold)),
-          Text('" was deleted.')
+          Text('" ${Strings.wasDeleted}.')
         ],
       ),
       duration: duration,
       action: SnackBarAction(
-        label: 'Undo',
+        label: Strings.undo,
         onPressed: () {
           delete = false;
           setState(() {
@@ -141,7 +158,7 @@ class TabsContaiterState extends State<TabsContaiter>
     _scaffoldKey.currentState.showSnackBar(snackBar);
 
     Future.delayed(duration, () {
-      if (delete) DBProvider.instance.deleteTab(tab.id);
+      if (delete) DBProvider.deleteTab(tab.id);
     });
   } // deleteTab
 
@@ -205,7 +222,7 @@ class TabsContaiterState extends State<TabsContaiter>
         // add tab button
         SpeedDialChild(
           child: Icon(Icons.tab),
-          label: 'Tab',
+          label: Strings.tab,
           backgroundColor: theme.accentColor,
           labelStyle: fabChildLabeStyle,
           onTap: () async {
@@ -217,7 +234,7 @@ class TabsContaiterState extends State<TabsContaiter>
         // add list button
         SpeedDialChild(
           child: Icon(Icons.list),
-          label: 'List',
+          label: Strings.list,
           backgroundColor: theme.accentColor,
           labelStyle: fabChildLabeStyle,
           onTap: () async {

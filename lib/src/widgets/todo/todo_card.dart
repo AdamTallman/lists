@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lists/src/app_settings.dart';
 import 'package:lists/src/model/todo.dart';
 import 'package:lists/src/model/todo_list.dart';
+import 'package:lists/src/service/DBProvider.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/service/sqflite.dart';
 import 'package:lists/src/widgets/tabs_container.dart';
 import 'package:lists/src/widgets/todo/todo_widget.dart';
 
@@ -22,15 +24,26 @@ class _ToDoCardState extends State<ToDoCard> {
   bool _edit;
   final _captionTextController = TextEditingController();
   final _textController = TextEditingController();
+  AppSettings settings;
 
   TabsContaiterState _tabsContaiterState;
 
   TabsContaiterState get _tabsContainer =>
       _tabsContaiterState ?? TabsContaiter.of(context);
 
+  @override
+  void initState() {
+    _addNewTodo = false;
+    _edit = false;
+
+    _setCaptionController();
+
+    super.initState();
+  }
+
   void _addNewItem() async {
     final title = _textController.value.text;
-    int id = await DBProvider.instance.addTodo(title, widget.todoList.id);
+    int id = await DBProvider.addTodo(title, widget.todoList.id);
     widget.todoList.add(Todo(title, id: id));
     _resetTextField();
   }
@@ -41,7 +54,7 @@ class _ToDoCardState extends State<ToDoCard> {
     if (newTitle != null &&
         newTitle != '' &&
         newTitle != widget.todoList.title) {
-      DBProvider.instance.updateListTitle(widget.todoList.id, newTitle);
+      DBProvider.updateListTitle(widget.todoList.id, newTitle);
       setState(() {
         widget.todoList.title = newTitle;
         _edit = false;
@@ -59,7 +72,7 @@ class _ToDoCardState extends State<ToDoCard> {
   }
 
   void _removeItem(Todo item) {
-    DBProvider.instance.deleteTodo(item.id);
+    DBProvider.deleteTodo(item.id);
     setState(() {
       widget.todoList.remove(item);
     });
@@ -68,16 +81,6 @@ class _ToDoCardState extends State<ToDoCard> {
   void _setCaptionController() {
     _captionTextController.value =
         TextEditingValue(text: widget.todoList.title);
-  }
-
-  @override
-  void initState() {
-    _addNewTodo = false;
-    _edit = false;
-
-    _setCaptionController();
-
-    super.initState();
   }
 
   @override
@@ -90,7 +93,7 @@ class _ToDoCardState extends State<ToDoCard> {
             controller: _captionTextController,
             autofocus: true,
             decoration: InputDecoration(
-              hintText: 'Enter Caption',
+              hintText: Strings.caption,
               border: InputBorder.none,
             ),
             onSubmitted: (_) => _editCaption(),

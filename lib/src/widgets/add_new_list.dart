@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_list.dart';
-import 'package:lists/src/service/sqflite.dart';
+import 'package:lists/src/service/DBProvider.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/utils/context.dart';
 
 class AddNewList extends StatefulWidget {
@@ -22,7 +23,7 @@ class _AddNewListState extends State<AddNewList> {
 
     loading = false;
 
-    final id = await DBProvider.instance.addList(listTitle, widget.tabId);
+    final id = await DBProvider.addList(listTitle, widget.tabId);
     final list = TodoList(listTitle, id: id, todos: []);
     _reset(list);
   }
@@ -39,12 +40,12 @@ class _AddNewListState extends State<AddNewList> {
       padding: EdgeInsets.all(24),
       child: Column(
         children: [
-          Text('Add list'),
+          Text('${Strings.add} ${Strings.list.toLowerCase()}'),
           TextField(
             controller: _titleController,
             decoration: InputDecoration(
-              labelText: 'Title',
-              hintText: 'Title',
+              labelText: Strings.title,
+              hintText: Strings.title,
               errorText: tabExists ? 'This list already exists' : null,
             ),
           ),

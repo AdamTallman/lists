@@ -1,8 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:lists/src/model/todo_tab.dart';
 
-// this is all complete shit
-class DBProvider {
+/// this is all complete shit
+class SQFLiteProvider {
   static const String dbName = 'lists.db';
 
   static const String tabsTable = 'Tabs';
@@ -11,9 +11,9 @@ class DBProvider {
 
   Database _database;
 
-  DBProvider._ctor();
+  SQFLiteProvider._ctor();
 
-  static final instance = DBProvider._ctor();
+  static final instance = SQFLiteProvider._ctor();
 
   Future<Database> get database async {
     _database ??= await _init();

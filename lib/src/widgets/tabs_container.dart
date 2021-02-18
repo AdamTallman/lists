@@ -8,8 +8,8 @@ import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
 import 'package:lists/src/strings.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/widgets/add_new_list.dart';
-import 'package:lists/src/widgets/add_new_tab.dart';
+import 'package:lists/src/widgets/modals/add_new_list.dart';
+import 'package:lists/src/widgets/modals/add_new_tab.dart';
 import 'package:lists/src/widgets/tab_widget.dart';
 import 'package:lists/src/widgets/app_tab_bar.dart';
 
@@ -35,7 +35,6 @@ class TabsContaiter extends StatefulWidget {
 class TabsContaiterState extends State<TabsContaiter>
     with TickerProviderStateMixin {
   static const double appBarHeight = 75.0;
-  final _fabKey = GlobalKey<FabCircularMenuState>();
   final _tabKeys = List<GlobalKey<TabWidgetState>>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isFabVisible = true;
@@ -69,7 +68,8 @@ class TabsContaiterState extends State<TabsContaiter>
     );
 
     _tabController.addListener(() {
-      AppSettings.instance.lastOpenedTab = _tabController.index;
+      if (_tabController.indexIsChanging)
+        AppSettings.instance.lastOpenedTab = _tabController.index;
     });
 
     super.initState();
@@ -239,8 +239,9 @@ class TabsContaiterState extends State<TabsContaiter>
           labelStyle: fabChildLabeStyle,
           onTap: () async {
             final list = await showModalBottomSheet(
-                context: context,
-                builder: (_) => AddNewList(tabId: _activeTab.id));
+              context: context,
+              builder: (_) => AddNewList(tabId: _activeTab.id),
+            );
 
             if (list != null)
               _tabKeys[_activeTabIndex].currentState.addList(list);

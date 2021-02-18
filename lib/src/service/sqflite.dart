@@ -105,7 +105,7 @@ class SQFLiteProvider {
       return newlist;
     }).toList();
 
-    print(allLists);
+    //print(allLists);
 
     allTabs.forEach((tab) {
       tab = Map<String, dynamic>.from(tab);

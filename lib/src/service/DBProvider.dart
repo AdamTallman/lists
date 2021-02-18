@@ -25,7 +25,7 @@ class DBProvider {
   }
 
   static Future deleteTodo(int id) {
-    return deleteTodo(id);
+    return _dbInstance.deleteTodo(id);
   }
 
   static Future updateListTitle(int id, String newTitle) {

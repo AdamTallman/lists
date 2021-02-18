@@ -78,13 +78,18 @@ class TabWidgetState extends State<TabWidget> {
       children: [
         widget.tab.todoLists.isNotEmpty
             ? Expanded(
-                child: ListView.builder(
+                child: ListView.separated(
                   padding: EdgeInsets.only(bottom: 8),
                   scrollDirection: Axis.vertical,
                   itemCount: widget.tab.todoLists.length,
                   itemBuilder: (_, index) => ToDoCard(
                     todoList: widget.tab.todoLists[index],
                     onDelete: _deleteList,
+                  ),
+                  separatorBuilder: (_, __) => Container(
+                    height: 16,
+                    width: double.infinity,
+                    color: Colors.grey[200],
                   ),
                 ),
               )
@@ -94,8 +99,8 @@ class TabWidgetState extends State<TabWidget> {
     );
 
     return Container(
-      margin: EdgeInsets.only(left: 8, right: 8),
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      //margin: EdgeInsets.only(left: 8, right: 8),
+      //padding: EdgeInsets.symmetric(horizontal: 8),
       child: widget.tab == null
           ? Center(
               child: Text("Something is not okay"),

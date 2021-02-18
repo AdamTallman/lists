@@ -93,4 +93,31 @@ class Strings {
         return 'Название';
     }
   }
+
+  static String get edit {
+    switch (_lang) {
+      case Languages.en:
+        return 'Edit';
+      case Languages.ru:
+        return 'Редактировать';
+    }
+  }
+
+  static String get valueEmpty {
+    switch (_lang) {
+      case Languages.en:
+        return 'Value is empty';
+      case Languages.ru:
+        return 'Введите текст';
+    }
+  }
+
+  static String get save {
+    switch (_lang) {
+      case Languages.en:
+        return 'Save';
+      case Languages.ru:
+        return 'Сохранить';
+    }
+  }
 }

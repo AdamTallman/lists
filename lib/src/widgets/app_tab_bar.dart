@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/widgets/add_new_tab.dart';
+import 'package:lists/src/widgets/modals/add_new_tab.dart';
 import 'package:lists/src/widgets/tabs_container.dart';
 
 class AppTabBar extends StatelessWidget with PreferredSizeWidget {

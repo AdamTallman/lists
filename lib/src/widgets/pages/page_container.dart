@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
-import 'package:lists/src/service/sqflite.dart';
 import 'package:lists/src/widgets/tabs_container.dart';
 
 class PageContainer extends StatelessWidget {

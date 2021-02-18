@@ -28,6 +28,15 @@ class AppTheme {
     ),
   );
 
+  static final outlinedBottomButtonStyle = OutlinedButton.styleFrom(
+    primary: Colors.grey,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+  );
+
+  static final outlinedBottomButtonTextStyle = TextStyle(
+    color: Colors.grey,
+  );
+
   static final cardTextStyle = TextStyle(
     color: AppColors.text,
     fontSize: 14,

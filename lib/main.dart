@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/app_settings.dart';
 import 'package:lists/src/styles.dart';
-import 'package:lists/src/widgets/page.dart';
-import 'package:lists/src/utils/context.dart';
+import 'package:lists/src/widgets/pages/page_container.dart';
 
 void main() {
   WidgetsFlutterBinding

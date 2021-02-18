@@ -55,7 +55,7 @@ class _AddNewListState extends State<AddNewList> {
             children: [
               TextButton(
                 onPressed: _reset,
-                child: Text('Cancel'),
+                child: Text(Strings.cancel),
                 style: TextButton.styleFrom(primary: theme.primaryColor),
               ),
               ElevatedButton(

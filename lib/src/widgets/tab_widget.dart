@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/styles.dart';
 import 'package:lists/src/widgets/todo/todo_card.dart';
 import 'package:lists/src/utils/context.dart';
@@ -45,13 +46,18 @@ class TabWidgetState extends State<TabWidget> {
       duration: duration,
       content: Row(
         children: [
-          Text('List "'),
-          Text(list.title, style: TextStyle(fontWeight: FontWeight.bold)),
-          Text('" was deleted.'),
+          Text(Strings.deletedList + ' '),
+          Flexible(
+            child: Text(
+              list.title,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.fade,
+            ),
+          ),
         ],
       ),
       action: SnackBarAction(
-        label: 'Undo',
+        label: Strings.undo,
         onPressed: () {
           delete = false;
           setState(() {
@@ -93,8 +99,10 @@ class TabWidgetState extends State<TabWidget> {
                   ),
                 ),
               )
-            : Text('Nothing here yet',
-                style: TextStyle(color: AppColors.backgroundGrey))
+            : Text(
+                Strings.empty,
+                style: TextStyle(color: AppColors.backgroundGrey),
+              )
       ],
     );
 

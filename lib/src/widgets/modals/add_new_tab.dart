@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/utils/context.dart';
 
 class AddNewTab extends StatefulWidget {
@@ -45,17 +46,15 @@ class _AddNewTabState extends State<AddNewTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Add Tab',
-            style: TextStyle(
-              color: theme.primaryColor,
-            ),
+            Strings.newTab,
+            style: theme.textTheme.headline6,
           ),
           TextField(
             controller: _titleController,
             decoration: InputDecoration(
-              labelText: 'Title',
-              hintText: 'Title',
-              errorText: tabExists ? 'This tab already exists' : null,
+              labelText: Strings.title,
+              hintText: Strings.title,
+              errorText: tabExists ? Strings.tabAlreadyExists : null,
             ),
 
             //autofocus: true,
@@ -66,7 +65,9 @@ class _AddNewTabState extends State<AddNewTab> {
             children: [
               TextButton(
                   onPressed: _reset,
-                  child: loading ? CircularProgressIndicator() : Text('Cancel'),
+                  child: loading
+                      ? CircularProgressIndicator()
+                      : Text(Strings.cancel),
                   style: TextButton.styleFrom(primary: theme.primaryColor)),
               ElevatedButton(
                 onPressed: _titleController.value.text.isNotEmpty
@@ -75,7 +76,7 @@ class _AddNewTabState extends State<AddNewTab> {
                           _addTab();
                         })
                     : null,
-                child: Text('Add'),
+                child: Text(Strings.add),
                 style: ElevatedButton.styleFrom(
                   primary: theme.primaryColor,
                   shape: RoundedRectangleBorder(

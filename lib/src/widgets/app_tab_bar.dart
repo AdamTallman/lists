@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lists/src/model/todo_tab.dart';
+import 'package:lists/src/strings.dart';
 import 'package:lists/src/utils/context.dart';
-import 'package:lists/src/widgets/modals/add_new_tab.dart';
+import 'package:lists/src/widgets/pages/settings_page.dart';
 import 'package:lists/src/widgets/tabs_container.dart';
 
 class AppTabBar extends StatelessWidget with PreferredSizeWidget {
@@ -12,14 +12,6 @@ class AppTabBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(height);
   AppTabBar({@required this.tabBar, this.height, this.controller});
-
-  void _showAddTab(BuildContext context) async {
-    final tab = await showModalBottomSheet<TodoTab>(
-        context: context, builder: (_) => AddNewTab());
-    if (tab != null) TabsContaiter.of(context).addTab(tab);
-
-    //showBottomSheet(context: context, builder: (_) => AddNewTab());
-  }
 
   Future _deleteTab(BuildContext context) async {
     await TabsContaiter.of(context).deleteTab();
@@ -40,16 +32,35 @@ class AppTabBar extends StatelessWidget with PreferredSizeWidget {
       itemBuilder: (context) {
         return [
           PopupMenuItem(
-            child: Text('Delete Tab'),
+            child: Row(
+              children: [
+                Icon(Icons.delete, size: 20),
+                SizedBox(width: 16),
+                Text(Strings.deleteTab),
+              ],
+            ),
             value: 1,
           ),
-          PopupMenuItem(child: Text('Settings'), value: 2),
+          PopupMenuItem(
+            child: Row(
+              children: [
+                Icon(Icons.settings, size: 20),
+                SizedBox(width: 16),
+                Text(Strings.settings),
+              ],
+            ),
+            value: 2,
+          ),
         ];
       },
       onSelected: (val) {
         switch (val) {
           case 1:
             _deleteTab(context);
+            break;
+          case 2:
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => SettingsPage()));
             break;
         }
       },

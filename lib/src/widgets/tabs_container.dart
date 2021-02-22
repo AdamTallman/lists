@@ -72,6 +72,10 @@ class TabsContaiterState extends State<TabsContaiter>
         AppSettings.instance.lastOpenedTab = _tabController.index;
     });
 
+    AppSettings.instance.addListener(() {
+      setState(() {});
+    });
+
     super.initState();
   }
 
@@ -85,8 +89,6 @@ class TabsContaiterState extends State<TabsContaiter>
 
     _tabController.animateTo(widget.tabs.length - 1);
   }
-
-  void addList(TodoList list) {}
 
   Future deleteTab() async {
     final controllerIndex = _tabController.index;
@@ -121,9 +123,8 @@ class TabsContaiterState extends State<TabsContaiter>
     final snackBar = SnackBar(
       content: Row(
         children: [
-          Text('${Strings.tab} "'),
+          Text(Strings.deletedTab + ' '),
           Text(_activeTab.title, style: TextStyle(fontWeight: FontWeight.bold)),
-          Text('" ${Strings.wasDeleted}.')
         ],
       ),
       duration: duration,
@@ -227,7 +228,9 @@ class TabsContaiterState extends State<TabsContaiter>
           labelStyle: fabChildLabeStyle,
           onTap: () async {
             final tab = await showModalBottomSheet(
-                context: context, builder: (_) => AddNewTab());
+              context: context,
+              builder: (_) => AddNewTab(),
+            );
             if (tab != null) addTab(tab);
           },
         ),

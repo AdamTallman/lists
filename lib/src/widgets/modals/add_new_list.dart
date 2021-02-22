@@ -16,7 +16,6 @@ class AddNewList extends StatefulWidget {
 class _AddNewListState extends State<AddNewList> {
   TextEditingController _titleController = TextEditingController();
   bool loading = false;
-  bool tabExists = false;
 
   Future _addList() async {
     final listTitle = _titleController.value.text;
@@ -39,14 +38,17 @@ class _AddNewListState extends State<AddNewList> {
     return Container(
       padding: EdgeInsets.all(24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${Strings.add} ${Strings.list.toLowerCase()}'),
+          Text(
+            '${Strings.add} ${Strings.list.toLowerCase()}',
+            style: theme.textTheme.headline6,
+          ),
           TextField(
             controller: _titleController,
             decoration: InputDecoration(
               labelText: Strings.title,
               hintText: Strings.title,
-              errorText: tabExists ? 'This list already exists' : null,
             ),
           ),
           Container(height: 30),
@@ -59,18 +61,14 @@ class _AddNewListState extends State<AddNewList> {
                 style: TextButton.styleFrom(primary: theme.primaryColor),
               ),
               ElevatedButton(
-                  onPressed: _titleController.value.text.isNotEmpty
-                      ? () => setState(() {
-                            loading = true;
-                            _addList();
-                          })
-                      : null,
-                  child: Text('Add'),
-                  style: ElevatedButton.styleFrom(
-                    primary: theme.primaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ))
+                onPressed: _titleController.value.text.isNotEmpty
+                    ? () => setState(() {
+                          loading = true;
+                          _addList();
+                        })
+                    : null,
+                child: Text('Add'),
+              ),
             ],
           )
         ],

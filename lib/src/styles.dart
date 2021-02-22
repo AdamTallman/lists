@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:lists/src/app_settings.dart';
 
 class AppTheme {
   static final primaryColor = Colors.deepPurple;
-  static final accentColor = Color(0xFF8AB73A);
+  static final accentColor = Colors.amber; //Color(0xFF8AB73A);
 
   static final textTheme = TextTheme(
     headline6: TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w800,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: primaryColor,
     ),
   );
 
@@ -26,15 +28,30 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
     ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        primary: primaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+    ),
   );
 
   static final outlinedBottomButtonStyle = OutlinedButton.styleFrom(
     primary: Colors.grey,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+  );
+
+  static final secondaryTextButtonStyle = TextButton.styleFrom(
+    primary: accentColor,
+  );
+
+  static final secondaryElevatedButtonStyle = ElevatedButton.styleFrom(
+    primary: accentColor,
+    elevation: 0,
   );
 
   static final outlinedBottomButtonTextStyle = TextStyle(
     color: Colors.grey,
+    fontSize: AppSettings.instance.language == Languages.ru ? 12 : 15,
   );
 
   static final cardTextStyle = TextStyle(

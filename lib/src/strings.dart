@@ -2,17 +2,6 @@ import 'package:lists/src/app_settings.dart';
 import 'package:lists/src/strings.dart';
 
 class Strings {
-  static Languages get _lang => AppSettings.instance.language;
-
-  static String get tab {
-    switch (_lang) {
-      case Languages.en:
-        return "Tab";
-      case Languages.ru:
-        return "Вкладка";
-    }
-  }
-
   static String get add {
     switch (_lang) {
       case Languages.en:
@@ -22,21 +11,12 @@ class Strings {
     }
   }
 
-  static String get list {
+  static String get newTab {
     switch (_lang) {
       case Languages.en:
-        return "List";
+        return 'New Tab';
       case Languages.ru:
-        return "Список";
-    }
-  }
-
-  static String get undo {
-    switch (_lang) {
-      case Languages.en:
-        return 'Undo';
-      case Languages.ru:
-        return 'Отменить';
+        return 'Новая вкладка';
     }
   }
 
@@ -45,34 +25,7 @@ class Strings {
       case Languages.en:
         return 'Cancel';
       case Languages.ru:
-        return 'Отменить';
-    }
-  }
-
-  static String get delete {
-    switch (_lang) {
-      case Languages.en:
-        return 'Delete';
-      case Languages.ru:
-        return 'Удалить';
-    }
-  }
-
-  static String get deleteTab {
-    switch (_lang) {
-      case Languages.en:
-        return 'Delete tab';
-      case Languages.ru:
-        return 'Удалить вкладку';
-    }
-  }
-
-  static String get wasDeleted {
-    switch (_lang) {
-      case Languages.en:
-        return 'was deleted';
-      case Languages.ru:
-        return 'удалена';
+        return 'Отмена';
     }
   }
 
@@ -85,12 +38,39 @@ class Strings {
     }
   }
 
-  static String get title {
+  static String get delete {
     switch (_lang) {
       case Languages.en:
-        return 'Title';
+        return 'Delete';
       case Languages.ru:
-        return 'Название';
+        return 'Удалить';
+    }
+  }
+
+  static String get deletedList {
+    switch (_lang) {
+      case Languages.en:
+        return 'Deleted list';
+      case Languages.ru:
+        return 'удален список';
+    }
+  }
+
+  static String get deletedTab {
+    switch (_lang) {
+      case Languages.en:
+        return 'Deleted tab';
+      case Languages.ru:
+        return 'Удалена вкладка';
+    }
+  }
+
+  static String get deleteTab {
+    switch (_lang) {
+      case Languages.en:
+        return 'Delete tab';
+      case Languages.ru:
+        return 'Удалить вкладку';
     }
   }
 
@@ -103,12 +83,30 @@ class Strings {
     }
   }
 
-  static String get valueEmpty {
+  static String get empty {
     switch (_lang) {
       case Languages.en:
-        return 'Value is empty';
+        return 'Nothing here yet';
       case Languages.ru:
-        return 'Введите текст';
+        return 'Пусто';
+    }
+  }
+
+  static String get language {
+    switch (_lang) {
+      case Languages.en:
+        return 'Language';
+      case Languages.ru:
+        return 'Язык';
+    }
+  }
+
+  static String get list {
+    switch (_lang) {
+      case Languages.en:
+        return "List";
+      case Languages.ru:
+        return "Список";
     }
   }
 
@@ -120,4 +118,60 @@ class Strings {
         return 'Сохранить';
     }
   }
+
+  static String get settings {
+    switch (_lang) {
+      case Languages.en:
+        return 'Settings';
+      case Languages.ru:
+        return 'Настройки';
+    }
+  }
+
+  static String get tab {
+    switch (_lang) {
+      case Languages.en:
+        return "Tab";
+      case Languages.ru:
+        return "Вкладка";
+    }
+  }
+
+  static String get tabAlreadyExists {
+    switch (_lang) {
+      case Languages.en:
+        return 'This tab already exist';
+      case Languages.ru:
+        return 'Вкладка с таким именем уже существует';
+    }
+  }
+
+  static String get title {
+    switch (_lang) {
+      case Languages.en:
+        return 'Title';
+      case Languages.ru:
+        return 'Название';
+    }
+  }
+
+  static String get undo {
+    switch (_lang) {
+      case Languages.en:
+        return 'Undo';
+      case Languages.ru:
+        return 'Отменить';
+    }
+  }
+
+  static String get valueEmpty {
+    switch (_lang) {
+      case Languages.en:
+        return 'Value is empty';
+      case Languages.ru:
+        return 'Введите текст';
+    }
+  }
+
+  static Languages get _lang => AppSettings.instance.language;
 }

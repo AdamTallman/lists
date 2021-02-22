@@ -192,16 +192,20 @@ class _ToDoCardState extends State<ToDoCard> {
               : Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: ListTile(
-                    title: Expanded(
-                      //width: 150,
-                      child: TextField(
-                        controller: _textController,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          hintText: 'To do',
+                    title: Row(
+                      children: [
+                        Expanded(
+                          //width: 150,
+                          child: TextField(
+                            controller: _textController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              hintText: 'To do',
+                            ),
+                            onSubmitted: (_) => _addNewItem(),
+                          ),
                         ),
-                        onSubmitted: (_) => _addNewItem(),
-                      ),
+                      ],
                     ),
                     trailing: FittedBox(
                       child: Row(

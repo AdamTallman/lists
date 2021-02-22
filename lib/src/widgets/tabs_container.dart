@@ -7,6 +7,7 @@ import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
 import 'package:lists/src/strings.dart';
+import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/widgets/modals/add_new_list.dart';
 import 'package:lists/src/widgets/modals/add_new_tab.dart';
@@ -211,7 +212,13 @@ class TabsContaiterState extends State<TabsContaiter>
       unselectedLabelColor: theme.primaryColor,
     );
 
-    final fabChildLabeStyle = TextStyle(color: Colors.white, fontSize: 16);
+    final fabChildLabeStyle = TextStyle(
+      color: mediaQuery.platformBrightness == Brightness.light
+          ? Colors.black
+          : Colors.white,
+      fontSize: 16,
+    );
+    print(theme.brightness);
 
     final fab = SpeedDial(
       icon: Icons.add,
@@ -219,6 +226,7 @@ class TabsContaiterState extends State<TabsContaiter>
       tooltip: 'Add Something',
       curve: Curves.bounceIn,
       backgroundColor: theme.primaryColor,
+      foregroundColor: Colors.white,
       children: [
         // add tab button
         SpeedDialChild(

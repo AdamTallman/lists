@@ -4,6 +4,7 @@ import 'package:lists/src/app_settings.dart';
 class AppTheme {
   static final primaryColor = Colors.deepPurple;
   static final accentColor = Colors.amber; //Color(0xFF8AB73A);
+  static final lightThemeTextColor = Colors.grey[850];
 
   static final textTheme = TextTheme(
     headline6: TextStyle(

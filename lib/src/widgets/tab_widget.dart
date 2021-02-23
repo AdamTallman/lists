@@ -90,7 +90,7 @@ class TabWidgetState extends State<TabWidget> {
                   itemCount: widget.tab.todoLists.length,
                   itemBuilder: (_, index) => ToDoCard(
                     todoList: widget.tab.todoLists[index],
-                    onDelete: _deleteList,
+                    deleteCallback: _deleteList,
                   ),
                   separatorBuilder: (_, __) => Container(
                     height: 16,

@@ -15,12 +15,12 @@ class AddNewList extends StatefulWidget {
 
 class _AddNewListState extends State<AddNewList> {
   TextEditingController _titleController = TextEditingController();
-  bool loading = false;
+  bool _loading = false;
 
   Future _addList() async {
     final listTitle = _titleController.value.text;
 
-    loading = false;
+    _loading = false;
 
     final id = await DBProvider.addList(listTitle, widget.tabId);
     final list = TodoList(listTitle, id: id, todos: []);
@@ -28,7 +28,7 @@ class _AddNewListState extends State<AddNewList> {
   }
 
   void _reset([val]) {
-    loading = false;
+    _loading = false;
     _titleController.clear();
     Navigator.of(context).pop<TodoList>(val);
   }
@@ -63,11 +63,11 @@ class _AddNewListState extends State<AddNewList> {
               ElevatedButton(
                 onPressed: _titleController.value.text.isNotEmpty
                     ? () => setState(() {
-                          loading = true;
+                          _loading = true;
                           _addList();
                         })
                     : null,
-                child: Text('Add'),
+                child: Text(Strings.add),
               ),
             ],
           )

@@ -13,9 +13,9 @@ import 'package:lists/src/widgets/todo/todo_widget.dart';
 
 class ToDoCard extends StatefulWidget {
   final TodoList todoList;
-  final void Function(int) onDelete;
+  final void Function(int) deleteCallback;
 
-  ToDoCard({@required this.todoList, @required this.onDelete});
+  ToDoCard({@required this.todoList, @required this.deleteCallback});
 
   @override
   _ToDoCardState createState() => _ToDoCardState();
@@ -23,9 +23,9 @@ class ToDoCard extends StatefulWidget {
 
 class _ToDoCardState extends State<ToDoCard> {
   bool _addNewTodo;
-  bool _edit;
   final _captionTextController = TextEditingController();
-  final _textController = TextEditingController();
+  TextEditingController _textController;
+  FocusNode _focusNode;
   AppSettings settings;
 
   TabsContaiterState _tabsContaiterState;
@@ -36,18 +36,27 @@ class _ToDoCardState extends State<ToDoCard> {
   @override
   void initState() {
     _addNewTodo = false;
-    _edit = false;
+    _focusNode = FocusNode();
+    _textController = TextEditingController();
 
-    _setCaptionController();
+    _captionTextController.value =
+        TextEditingValue(text: widget.todoList.title);
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _focusNode.dispose();
+
+    super.dispose();
   }
 
   void _addNewItem() async {
     final title = _textController.value.text;
     int id = await DBProvider.addTodo(title, widget.todoList.id);
-    widget.todoList.add(Todo(title, id: id));
-    _resetTextField();
+    setState(() => widget.todoList.add(Todo(title, id: id)));
   }
 
   void _editTitle() async {
@@ -68,28 +77,13 @@ class _ToDoCardState extends State<ToDoCard> {
       DBProvider.updateListTitle(widget.todoList.id, response.value);
       setState(() {
         widget.todoList.title = response.value;
-        _edit = false;
-        _setCaptionController();
+        _captionTextController.value =
+            TextEditingValue(text: widget.todoList.title);
       });
     } // if (response.answer == DialogAnswer.ok
 
     else if (response.answer == DialogAnswer.delete)
-      widget.onDelete(widget.todoList.id); // callback to TabWidget
-  }
-
-  void _editCaption1() {
-    _tabsContainer.showFab();
-    final newTitle = _captionTextController.value.text;
-    if (newTitle != null &&
-        newTitle != '' &&
-        newTitle != widget.todoList.title) {
-      DBProvider.updateListTitle(widget.todoList.id, newTitle);
-      setState(() {
-        widget.todoList.title = newTitle;
-        _edit = false;
-        _setCaptionController();
-      });
-    }
+      widget.deleteCallback(widget.todoList.id); // callback to TabWidget
   }
 
   void _resetTextField() {
@@ -105,11 +99,6 @@ class _ToDoCardState extends State<ToDoCard> {
     setState(() {
       widget.todoList.remove(item);
     });
-  }
-
-  void _setCaptionController() {
-    _captionTextController.value =
-        TextEditingValue(text: widget.todoList.title);
   }
 
   @override
@@ -198,11 +187,18 @@ class _ToDoCardState extends State<ToDoCard> {
                           //width: 150,
                           child: TextField(
                             controller: _textController,
+                            focusNode: _focusNode,
                             autofocus: true,
                             decoration: InputDecoration(
                               hintText: 'To do',
                             ),
-                            onSubmitted: (_) => _addNewItem(),
+                            onSubmitted: (_) {
+                              _addNewItem();
+                              setState(() {
+                                _focusNode.requestFocus();
+                                _textController.clear();
+                              });
+                            },
                           ),
                         ),
                       ],
@@ -217,7 +213,10 @@ class _ToDoCardState extends State<ToDoCard> {
                           IconButton(
                             icon: Icon(Icons.done),
                             color: Colors.blue,
-                            onPressed: _addNewItem,
+                            onPressed: () {
+                              _addNewItem();
+                              _resetTextField();
+                            },
                           ),
                         ],
                       ),

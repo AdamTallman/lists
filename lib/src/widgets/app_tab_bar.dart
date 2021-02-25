@@ -11,10 +11,10 @@ class AppTabBar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(height);
-  AppTabBar({@required this.tabBar, this.height, this.controller});
+  AppTabBar({@required this.tabBar, this.height = 75, this.controller});
 
   Future _deleteTab(BuildContext context) async {
-    await TabsContaiter.of(context).deleteTab();
+    await TabContaiter.of(context).deleteTab();
   }
 
   @override

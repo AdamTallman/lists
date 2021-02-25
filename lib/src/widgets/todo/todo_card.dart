@@ -28,10 +28,10 @@ class _ToDoCardState extends State<ToDoCard> {
   FocusNode _focusNode;
   AppSettings settings;
 
-  TabsContaiterState _tabsContaiterState;
+  TabContaiterState _tabsContaiterState;
 
-  TabsContaiterState get _tabsContainer =>
-      _tabsContaiterState ?? TabsContaiter.of(context);
+  TabContaiterState get _tabsContainer =>
+      _tabsContaiterState ?? TabContaiter.of(context);
 
   @override
   void initState() {

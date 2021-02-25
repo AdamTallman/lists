@@ -39,6 +39,13 @@ class _AddNewTabState extends State<AddNewTab> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24),
@@ -50,6 +57,7 @@ class _AddNewTabState extends State<AddNewTab> {
             style: theme.textTheme.headline6,
           ),
           TextField(
+            autofocus: true,
             controller: _titleController,
             decoration: InputDecoration(
               labelText: Strings.title,

@@ -11,7 +11,7 @@ class PageContainer extends StatelessWidget {
         builder: (_, snapshot) {
           if (snapshot.hasError) return Center(child: Text('oh shit'));
           if (snapshot.connectionState == ConnectionState.done)
-            return TabsContaiter(tabs: snapshot.data);
+            return TabContaiter(tabs: snapshot.data);
 
           return Center(child: CircularProgressIndicator());
         });

@@ -40,6 +40,13 @@ class _EditListState extends State<EditList> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(24),

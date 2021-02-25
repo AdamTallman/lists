@@ -1,28 +1,25 @@
-import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lists/src/app_settings.dart';
-import 'package:lists/src/model/todo_list.dart';
 import 'package:lists/src/model/todo_tab.dart';
 import 'package:lists/src/service/DBProvider.dart';
 import 'package:lists/src/strings.dart';
-import 'package:lists/src/styles.dart';
 import 'package:lists/src/utils/context.dart';
 import 'package:lists/src/widgets/modals/add_new_list.dart';
 import 'package:lists/src/widgets/modals/add_new_tab.dart';
 import 'package:lists/src/widgets/tab_widget.dart';
 import 'package:lists/src/widgets/app_tab_bar.dart';
 
-class TabsContaiter extends StatefulWidget {
+class TabContaiter extends StatefulWidget {
   final List<TodoTab> tabs;
-  TabsContaiter({@required this.tabs});
+  TabContaiter({@required this.tabs});
 
   @override
-  TabsContaiterState createState() => TabsContaiterState();
+  TabContaiterState createState() => TabContaiterState();
 
-  static TabsContaiterState of(BuildContext context) {
-    final tabsContainer = context.findAncestorStateOfType<TabsContaiterState>();
+  static TabContaiterState of(BuildContext context) {
+    final tabsContainer = context.findAncestorStateOfType<TabContaiterState>();
     assert(() {
       if (tabsContainer == null)
         throw FlutterError('Somethins is reaaly wrong here');
@@ -33,28 +30,36 @@ class TabsContaiter extends StatefulWidget {
   }
 }
 
-class TabsContaiterState extends State<TabsContaiter>
+class TabContaiterState extends State<TabContaiter>
     with TickerProviderStateMixin {
-  static const double appBarHeight = 75.0;
+  /// The keys of the tabs that tha widget holds.
   final _tabKeys = List<GlobalKey<TabWidgetState>>();
+
+  /// The [Scaffold]'s key, used
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// The visibility of the [FloatingActionButton].
   bool _isFabVisible = true;
 
   AppSettings settings;
 
   TabController _tabController;
 
-  /// Return the active tab/
-  /// Can be called only AFTER the state was initialized
+  /// Returns the active tab.
+  ///
+  /// Can be called only AFTER the state was initialized.
   TodoTab get _activeTab => widget.tabs[_tabController.index];
 
+  /// The index of the active tab in the [TabContoller].
   int get _activeTabIndex => widget.tabs.indexOf(_activeTab);
 
   @override
   void initState() {
+    // TODO: deal with the 0 tabs
     if (widget.tabs == null || widget.tabs.length == 0)
       print('there is a problem here');
 
+    // This is supposed to be loaded at this point, but just in case.
     AppSettings.instance.load();
     final initialIndex = AppSettings.instance.lastOpenedTab < widget.tabs.length
         ? AppSettings.instance.lastOpenedTab
@@ -73,32 +78,50 @@ class TabsContaiterState extends State<TabsContaiter>
         AppSettings.instance.lastOpenedTab = _tabController.index;
     });
 
+    // dont like this at all
     AppSettings.instance.addListener(() {
-      setState(() {});
+      //setState(() {});
     });
 
     super.initState();
   }
 
-  void addTab(TodoTab tab) {
-    _tabKeys.add(GlobalKey<TabWidgetState>());
-    setState(() {
-      widget.tabs.add(tab);
-      _tabController.dispose();
-      _tabController = TabController(length: widget.tabs.length, vsync: this);
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
 
-    _tabController.animateTo(widget.tabs.length - 1);
+    super.dispose();
   }
 
+  /// Adds new tab to the container and navigates [TabController] to it.
+  void _addTab(TodoTab tab) {
+    _tabKeys.add(GlobalKey<TabWidgetState>());
+    _tabController.dispose();
+
+    setState(() {
+      widget.tabs.add(tab);
+
+      // TODO: this is shit. Gotta find a way without creating a new TabController
+      // and registering a new Ticker
+      _tabController = TabController(
+        length: widget.tabs.length,
+        vsync: this,
+      );
+      _tabController.animateTo(widget.tabs.length - 1);
+    });
+  }
+
+  /// Deletes the current tab and navigates [TabController] to the last tab
   Future deleteTab() async {
+    // TODO set controller to the previous tab after deletion
     final controllerIndex = _tabController.index;
     assert(controllerIndex == _activeTabIndex);
     final tabIndex = _activeTabIndex;
     bool delete = true;
     final duration = Duration(seconds: 4);
 
-    final dialogAnswer = await showDialog<bool>(
+    // ask for confirmation
+    final bool dialogAnswer = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('${Strings.deleteTab} ${_activeTab.title}?'),
@@ -108,6 +131,7 @@ class TabsContaiterState extends State<TabsContaiter>
             child: Text(Strings.cancel),
             onPressed: () => Navigator.of(context).pop<bool>(false),
           ),
+          // delete button
           ElevatedButton(
             child: Text(Strings.delete),
             onPressed: () => Navigator.of(context).pop<bool>(true),
@@ -129,41 +153,45 @@ class TabsContaiterState extends State<TabsContaiter>
         ],
       ),
       duration: duration,
+      // Undo button. Returns the tab to the container and resets the tabController
       action: SnackBarAction(
         label: Strings.undo,
         onPressed: () {
           delete = false;
+          _tabController.dispose();
           setState(() {
             widget.tabs.insert(tabIndex, tab);
             _tabKeys.insert(tabIndex, tabKey);
-            _tabController.dispose();
             _tabController = TabController(
               length: widget.tabs.length,
               vsync: this,
               initialIndex: tabIndex,
             );
-          });
+          }); // setState()
         },
       ),
     );
 
+    _tabController.dispose();
     setState(() {
       _tabKeys.removeAt(tabIndex);
       widget.tabs.removeAt(tabIndex);
-      _tabController.dispose();
       _tabController = TabController(
           length: widget.tabs.length,
           vsync: this,
           initialIndex: widget.tabs.length - 1);
     });
 
+    // show the snackBar after deletion
     _scaffoldKey.currentState.showSnackBar(snackBar);
 
+    // if the 'Undo' button wasn't pressed, delete the tab from database
     Future.delayed(duration, () {
       if (delete) DBProvider.deleteTab(tab.id);
     });
   } // deleteTab
 
+  /// Makes the FAB visible.
   void showFab() {
     if (_isFabVisible == false)
       setState(() {
@@ -171,6 +199,7 @@ class TabsContaiterState extends State<TabsContaiter>
       });
   }
 
+  /// Makes the FAB invisible.
   void hideFab() {
     if (_isFabVisible == true)
       setState(() {
@@ -184,23 +213,21 @@ class TabsContaiterState extends State<TabsContaiter>
 
     final tabBar = TabBar(
       tabs: widget.tabs
-          .map(
-            (tab) => Tab(
-              child: Row(
-                children: [
-                  Text(tab.title),
-                  if (tab.todosCount != 0)
-                    Container(
-                      margin: EdgeInsets.only(left: 4),
-                      child: Text(
-                        tab.todosCount.toString(),
-                        style: TextStyle(color: theme.accentColor),
+          .map((tab) => Tab(
+                child: Row(
+                  children: [
+                    Text(tab.title),
+                    if (tab.todosCount != 0) // todos counter
+                      Container(
+                        margin: EdgeInsets.only(left: 4),
+                        child: Text(
+                          tab.todosCount.toString(),
+                          style: TextStyle(color: theme.accentColor),
+                        ),
                       ),
-                    ),
-                ],
-              ),
-            ),
-          )
+                  ],
+                ),
+              ))
           .toList(),
       controller: _tabController,
       isScrollable: true,
@@ -235,11 +262,12 @@ class TabsContaiterState extends State<TabsContaiter>
           backgroundColor: theme.accentColor,
           labelStyle: fabChildLabeStyle,
           onTap: () async {
+            // show AddNewTab modal form and wait for response
             final tab = await showModalBottomSheet(
               context: context,
               builder: (_) => AddNewTab(),
             );
-            if (tab != null) addTab(tab);
+            if (tab != null) _addTab(tab);
           },
         ),
         // add list button
@@ -249,6 +277,7 @@ class TabsContaiterState extends State<TabsContaiter>
           backgroundColor: theme.accentColor,
           labelStyle: fabChildLabeStyle,
           onTap: () async {
+            // show AddNewList modal form and wait for response
             final list = await showModalBottomSheet(
               context: context,
               builder: (_) => AddNewList(tabId: _activeTab.id),
@@ -265,7 +294,6 @@ class TabsContaiterState extends State<TabsContaiter>
       key: _scaffoldKey,
       appBar: AppTabBar(
         tabBar: tabBar,
-        height: appBarHeight,
       ),
       body: TabBarView(
         children: widget.tabs

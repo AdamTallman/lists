@@ -31,7 +31,7 @@ class _AddNewListState extends State<AddNewList> {
     final listTitle = _titleController.value.text;
 
     final id = await DBProvider.addList(listTitle, widget.tabId);
-    final list = TodoList(listTitle, id: id, todos: []);
+    final list = TodoList(title: listTitle, id: id, todos: []);
     _reset(list);
   }
 

@@ -20,7 +20,7 @@ class TabWidget extends StatefulWidget {
 class TabWidgetState extends State<TabWidget> {
   void addList(TodoList list) {
     setState(() {
-      widget.tab.todoLists.add(list);
+      widget.tab.addList(list);
     });
   }
 
@@ -31,14 +31,14 @@ class TabWidgetState extends State<TabWidget> {
         content: Text('New list has been added'),
       ));
       setState(() {
-        widget.tab.todoLists.add(TodoList(title, id: id, todos: []));
+        widget.tab.addList(TodoList(title: title, id: id, todos: []));
       });
     }
   }
 
   void _deleteList(int id) async {
-    final list = widget.tab.todoLists.singleWhere((list) => list.id == id);
-    final listIndex = widget.tab.todoLists.indexOf(list);
+    final list = widget.tab.lists.singleWhere((list) => list.id == id);
+    final listIndex = widget.tab.lists.indexOf(list);
     final duration = Duration(seconds: 4);
     bool delete = true;
 
@@ -61,14 +61,14 @@ class TabWidgetState extends State<TabWidget> {
         onPressed: () {
           delete = false;
           setState(() {
-            widget.tab.todoLists.insert(listIndex, list);
+            widget.tab.addList(list, index: listIndex);
           });
         },
       ),
     );
 
     setState(() {
-      widget.tab.todoLists.remove(list);
+      widget.tab.lists.remove(list);
     });
 
     scaffold.showSnackBar(snackBar);
@@ -82,14 +82,14 @@ class TabWidgetState extends State<TabWidget> {
   Widget build(context) {
     final listsContainer = Column(
       children: [
-        widget.tab.todoLists.isNotEmpty
+        widget.tab.lists.isNotEmpty
             ? Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.only(bottom: 8),
                   scrollDirection: Axis.vertical,
-                  itemCount: widget.tab.todoLists.length,
+                  itemCount: widget.tab.lists.length,
                   itemBuilder: (_, index) => ToDoCard(
-                    todoList: widget.tab.todoLists[index],
+                    todoList: widget.tab.lists[index],
                     deleteCallback: _deleteList,
                   ),
                   separatorBuilder: (_, __) => Container(

@@ -1,8 +1,11 @@
+import 'package:lists/src/model/todo.dart';
+import 'package:lists/src/model/todo_list.dart';
+import 'package:lists/src/service/DBProvider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:lists/src/model/todo_tab.dart';
 
 /// this is all complete shit
-class SQFLiteProvider {
+class SQFLiteProvider implements DBProvider {
   static const String dbName = 'lists.db';
 
   static const String tabsTable = 'Tabs';
@@ -124,5 +127,28 @@ class SQFLiteProvider {
 
   Future<void> close() async {
     await (await database).close();
+  }
+
+  Future<Map<String, dynamic>> loadDatabase() async {
+    final db = await database;
+    final query = 'SELECT * FROM ';
+    final dbMap = Map<String, dynamic>();
+
+    final List<TodoTab> tabs = (await db.rawQuery(query + tabsTable))
+        .map((tabMap) => TodoTab.fromMap(tabMap))
+        .toList();
+    dbMap['tabs'] = tabs;
+
+    final List<TodoList> lists = (await db.rawQuery(query + listsTable))
+        .map((listMap) => TodoList.fromMap(listMap))
+        .toList();
+    dbMap['lists'] = lists;
+
+    final List<Todo> todos = (await db.rawQuery(query + todosTable))
+        .map((todosMap) => Todo.fromMap(todosMap))
+        .toList();
+    dbMap['todos'] = todos;
+
+    return dbMap;
   }
 }

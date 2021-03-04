@@ -209,8 +209,6 @@ class TabContaiterState extends State<TabContaiter>
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(20);
-
     final tabBar = TabBar(
       tabs: widget.tabs
           .map((tab) => Tab(
@@ -227,14 +225,14 @@ class TabContaiterState extends State<TabContaiter>
                       ),
                   ],
                 ),
-              ))
+              )) // .map(tab)
           .toList(),
       controller: _tabController,
       isScrollable: true,
       indicatorSize: TabBarIndicatorSize.tab,
       indicator: BoxDecoration(
         color: theme.primaryColor,
-        borderRadius: borderRadius,
+        borderRadius: BorderRadius.circular(20),
       ),
       unselectedLabelColor: theme.primaryColor,
     );

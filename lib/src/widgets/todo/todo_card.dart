@@ -56,7 +56,7 @@ class _ToDoCardState extends State<ToDoCard> {
   void _addNewItem() async {
     final title = _textController.value.text;
     int id = await DBProvider.addTodo(title, widget.todoList.id);
-    setState(() => widget.todoList.add(Todo(title, id: id)));
+    setState(() => widget.todoList.add(Todo(title: title, id: id)));
   }
 
   void _editTitle() async {

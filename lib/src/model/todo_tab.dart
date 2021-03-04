@@ -1,31 +1,45 @@
 // src/model/todo_tab.dart
-
+import 'package:objectbox/objectbox.dart';
 import 'package:lists/src/model/todo_list.dart';
 
+@Entity() // objectbox annotation
 class TodoTab {
-  final int id;
+  int id;
+
   final String title;
-  final List<TodoList> todoLists;
 
-  TodoTab(this.title, {this.id, this.todoLists = const []});
+  //@Transient()
+  //final List<TodoList> todoLists;
 
-  factory TodoTab.fromMap(Map<String, dynamic> map) {
-    return TodoTab(map['title'],
-        id: map['id'],
-        todoLists: map['lists'] == null
-            ? []
-            : (map['lists'] as List<Map<String, dynamic>>)
-                .map((todoListMap) => TodoList.fromMap(todoListMap))
-                .toList());
+  final lists = ToMany<TodoList>();
+
+  TodoTab({this.title, this.id, todoLists = const []}) {
+    lists.addAll(todoLists);
   }
 
-  int get todosCount => todoLists.isNotEmpty
-      ? todoLists.fold(
+  factory TodoTab.fromMap(Map<String, dynamic> map) {
+    return TodoTab(
+      title: map['title'],
+      id: map['id'],
+      todoLists: map['lists'] == null
+          ? []
+          : (map['lists'] as List<Map<String, dynamic>>)
+              .map((todoListMap) => TodoList.fromMap(todoListMap))
+              .toList(),
+    );
+  }
+
+  void addList(TodoList list, {int index}) {
+    index == null ? lists.add(list) : lists.insert(index, list);
+  }
+
+  int get todosCount => lists.isNotEmpty
+      ? lists.fold(
           0, (previousValue, todoList) => previousValue + todoList.todosCount)
       : 0;
 
   bool get isNotEmpty =>
-      todoLists.isNotEmpty &&
-      todoLists.fold(true,
+      lists.isNotEmpty &&
+      lists.fold(true,
           (previousValue, todoList) => todoList.isNotEmpty && previousValue);
 }

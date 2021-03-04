@@ -1,20 +1,30 @@
 import 'package:lists/src/model/todo.dart';
+import 'package:objectbox/objectbox.dart';
 
+@Entity()
 class TodoList {
   String title;
-  final int id;
-  final List<Todo> todos;
+  int id;
 
-  TodoList(this.title, {this.id, this.todos = const <Todo>[]});
+  //@Transient()
+  //final List<Todo> todos;
+
+  final todos = ToMany<Todo>();
+
+  TodoList({this.title, this.id, todos = const <Todo>[]}) {
+    this.todos.addAll(todos);
+  }
 
   factory TodoList.fromMap(Map<String, dynamic> map) {
-    return TodoList(map['title'],
-        id: map['id'],
-        todos: map['todos'] == null
-            ? []
-            : (map['todos'] as List<Map>)
-                .map((todoMap) => Todo.fromMap(todoMap))
-                .toList());
+    return TodoList(
+      title: map['title'],
+      id: map['id'],
+      todos: map['todos'] == null
+          ? []
+          : (map['todos'] as List<Map>)
+              .map((todoMap) => Todo.fromMap(todoMap))
+              .toList(),
+    );
   }
 
   int get todosCount => todos.length;

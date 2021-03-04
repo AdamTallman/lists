@@ -26,7 +26,7 @@ class _AddNewTabState extends State<AddNewTab> {
       return;
     } else {
       final id = await DBProvider.addTab(tabTitle);
-      tab = TodoTab(tabTitle, id: id, todoLists: []);
+      tab = TodoTab(title: tabTitle, id: id, todoLists: []);
     }
     _reset(tab);
   }

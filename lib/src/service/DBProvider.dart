@@ -39,4 +39,6 @@ class DBProvider {
   static Future<List<TodoTab>> getTabs() {
     return _dbInstance.getTabs();
   }
+
+  static void migrate() {}
 }
